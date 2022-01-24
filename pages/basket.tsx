@@ -1,12 +1,20 @@
-import { RoomProvider, useBatch, useList, useMyPresence, useOthers } from '@liveblocks/react'
+import { RoomProvider, useBatch, useEventListener, useList, useMyPresence, useObject, useOthers, useRoom, useSelf } from '@liveblocks/react'
 import { productList } from '../config/product-list'
 import { useEffect, useState } from 'react'
 import Logo from '../components/Logo'
+import Image from 'next/image'
 
+// https://www.pexels.com/collections/eating-vegan-1ivf0l1/
 // https://www.pexels.com/collections/flower-power-mii4yiv/
 // https://www.pexels.com/collections/tutti-frutti-bwxbmg7/
 // https://www.pexels.com/collections/confectionery-fqhuzhu/
 // https://www.pexels.com/collections/discover-the-world-vl4e0bx/
+
+//type APICall = { data: any } | { error: any }
+type APICall = {
+  data?: any,
+  error?: string
+}
 
 export default function Root () {
   let room: string = ''
@@ -16,6 +24,27 @@ export default function Root () {
   if (typeof window !== 'undefined') {
     room = new URLSearchParams(document.location.search).get('room') || ''
   }
+
+  /*
+  useEffect(() => {
+    async function getRoomStorage () {
+      const { data, error }: APICall = await fetch('/api/getRoomStorage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ room })
+      }).then((res) => res.json())
+
+      console.log(data, error)
+    }
+
+    getRoomStorage()
+  }, [])
+
+  return <div />
+
+   */
 
   return (
     <RoomProvider id={room}>
@@ -28,6 +57,7 @@ export type Product = {
   id: number
   name: string
   price: number
+  image: StaticImageData | string
   quantity?: number
 }
 
@@ -35,24 +65,20 @@ type User = {
   driver?: boolean
 }
 
+/**
+ * NEW HOOK IDEA
+ * const connected = useConnected()
+ * This could return true if connection status === 'open', false otherwise
+ */
+
 function BasketDemo () {
   const [myPresence, updateMyPresence] = useMyPresence<User>()
+  const self = useSelf()
   const others = useOthers<User>()
   const batch = useBatch()
-  const basket = useList<Product>('basketlist')
-
-  useEffect(() => {
-    updateMyPresence({ driver: false })
-  }, [])
-
-  useEffect(() => {
-    if (!myPresence.driver && others.count === 0) {
-      updateMyPresence({ driver: true })
-    }
-    console.log(myPresence)
-  }, [others])
-
-  // const driver = [...others.toArray(), myPresence].find(other => other.driver)
+  const basket = useList<Product>('basket')
+  const basketProperties = useObject('basketProperties', { total: 0 })
+  const [connected, setConnected] = useState<boolean>(false)
 
   function handleAddToBasket (product: Product) {
     if (!basket) {
@@ -99,26 +125,32 @@ function BasketDemo () {
           <Avatar url="/assets/avatars/0.png" color="skyblue" />
         </div>
       </header>
-      <div className="flex items-stretch">
+      <div className="flex items-stretch mx-auto max-w-screen-2xl">
         <main className="flex-grow">
-          <div className="grid grid-cols-4">
+          <div className="font-title text-center py-12 text-5xl">
+            Veganuary
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {productList.map(p => <Item key={p.name} product={p} onAddToBasket={handleAddToBasket} />)}
           </div>
         </main>
-        <aside className="w-80 bg-gray-50 px-6">
-          <div className="text-lg font-bold my-6">Basket</div>
-          {basket ? basket.map(item => (
-            <div key={item.id} className="mb-4">
-              <div>{item.name}</div>
-              Quantity: {item.quantity}&nbsp;
-              <button onClick={() => handleRemoveItem(item.id)}>Remove</button>
-            </div>
-          )) : (
-            <>Loading...</>
-          )}
+        <aside className="w-80 bg-gray-50 px-6 flex-shrink-0">
+          <div className="sticky top-10">
 
-          <button onClick={handleEmptyBasket}>Empty basket</button>
+            <div className="text-lg font-bold my-6">Basket</div>
+            {basket ? basket.map(item => (
+              <div key={item.id} className="mb-4">
+                <div>{item.name}</div>
+                Quantity: {item.quantity}&nbsp;
+                <button onClick={() => handleRemoveItem(item.id)}>Remove</button>
+              </div>
+            )) : (
+              <>Loading...</>
+            )}
 
+            <button onClick={handleEmptyBasket}>Empty basket</button>
+
+          </div>
         </aside>
       </div>
     </>
@@ -140,7 +172,9 @@ function Item ({ product, onAddToBasket = () => {} }: ItemProps) {
 
   return (
     <div className="p-6">
-      <div className="w-full aspect-square bg-blue-50" />
+      <div className="w-full aspect-[1/1.3] overflow-hidden relative">
+        <Image src={product.image} alt={product.name} layout="fill" objectFit="cover" />
+      </div>
       <div>{product.name}</div>
       <div className="flex justify-between">
         <button disabled={quantity < 2} className="border w-10 rounded" onClick={() => setQuantity(quantity - 1)}>-</button>

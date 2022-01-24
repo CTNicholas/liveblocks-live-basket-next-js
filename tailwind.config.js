@@ -10,7 +10,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        karla: 'Karla, Inter, sans-serif'
+        karla: 'Karla, Inter, sans-serif',
+        title: '"Playfair Display", Georgia, serif',
       },
       colors: {
         gray: {
