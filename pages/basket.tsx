@@ -63,7 +63,7 @@ export type Product = {
   name: string
   price: number
   image: StaticImageData | string
-  quantity: number
+  quantity?: number
   requested?: boolean
 }
 
@@ -116,7 +116,7 @@ function BasketDemo () {
     if (!basket) {
       return 0
     }
-    return basket.toArray().reduce((acc, product) => acc + product.price * product.quantity, 0)
+    return basket.toArray().reduce((acc, product) => acc + product.price * (product.quantity || 1), 0)
   }
 
   function iAmDriver (): boolean {
