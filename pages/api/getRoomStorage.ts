@@ -26,6 +26,7 @@ export default async function auth (req: NextApiRequest, res: NextApiResponse) {
   if (!authResult.ok) {
     return res.status(500).json({ error: authData.error })
   }
+
   // Get room storage using JWT
   const roomResult = await fetch(roomUrl(room), {
     headers: {

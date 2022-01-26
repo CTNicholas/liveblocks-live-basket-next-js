@@ -4,17 +4,16 @@ import { AppProps } from 'next/app'
 import 'tailwindcss/tailwind.css'
 import '../styles/globals.css'
 
+/**
+ * createClient with callback. We're using this so pass a userId to the client
+ */
 const client = createClient({
   authEndpoint: async (room) => {
-    // Before connecting to Liveblocks, get ID from localstorage, or generate new ID and store
-    let userId = localStorage.getItem('userId')
-    if (!userId) {
-      userId = Math.random().toString(36).substring(2, 10)
-      localStorage.setItem('userId', userId)
-    }
+    // A unique ID for current user (e.g. from a database)
+    const userId = await getUserId()
 
     // Connect to auth api and send userId, along with the room
-    const response = await fetch('/api/auth', {
+    const response = await fetch('/api/authWithUserId', {
       method: 'POST',
       headers: {
         Authentication: 'token',
@@ -26,7 +25,6 @@ const client = createClient({
   }
 })
 
-
 function MyApp ({ Component, pageProps }: AppProps) {
   return (
     /**
@@ -37,6 +35,20 @@ function MyApp ({ Component, pageProps }: AppProps) {
       <Component {...pageProps} />
     </LiveblocksProvider>
   )
+}
+
+// Simulate a userId taken from a database using localStorage
+async function getUserId () {
+  return Math.random().toString(36).substring(2, 10)
+
+/*
+  let userId = localStorage.getItem('userId')
+  if (!userId) {
+    userId = Math.random().toString(36).substring(2, 10)
+    localStorage.setItem('userId', userId)
+  }
+  return userId
+   */
 }
 
 export default MyApp

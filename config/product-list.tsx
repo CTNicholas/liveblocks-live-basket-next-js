@@ -12,49 +12,49 @@ export const productList: Product[] = [
   {
     id: 0,
     name: 'Green smoothie',
-    price: 7,
+    price: 7.00,
     image: greenSmoothie,
   },
   {
     id: 1,
-    name: 'Peanut butter toast',
-    price: 0,
+    name: 'Peanut butter',
+    price: 3.00,
     image: peanutButterToast,
   },
   {
     id: 2,
     name: 'Cashew milk',
-    price: 0,
+    price: 1.20,
     image: cashewMilk,
   },
   {
     id: 3,
     name: 'Berry smoothie',
-    price: 0,
+    price: 2.10,
     image: berrySmoothie,
   },
   {
     id: 4,
     name: 'Leafy salad',
-    price: 0,
+    price: 0.75,
     image: leafySalad,
   },
   {
     id: 5,
     name: 'Fresh citrus',
-    price: 0,
+    price: 1.75,
     image: freshCitrus,
   },
   {
     id: 6,
     name: 'Fresh produce',
-    price: 0,
+    price: 4,
     image: freshProduce,
   },
   {
     id: 7,
     name: 'Nut breakfast',
-    price: 0,
+    price: 3.50,
     image: nutBreakfast,
   }
 ]
