@@ -87,7 +87,7 @@ function BasketDemo () {
   const requestedItems = useList<Product>('requestedItems')
   const basketProperties = useObject('basketProperties', { driver: '' })
 
-  const liveblocksLoaded = () => basket && basketProperties && self?.id && others
+  const liveblocksLoaded = () => (basket && basketProperties && self?.id && others)
 
   useEffect(() => {
     if (!basketProperties || !self?.id || !others) {
@@ -104,7 +104,10 @@ function BasketDemo () {
     if (liveblocksLoaded() && !iAmDriver()) {
       const otherDriver = others.toArray().some(other => other.id === basketProperties!.get('driver'))
       if (!otherDriver) {
-        basketProperties!.set('driver', others!.count && others!.toArray()[0]?.id ? others!.toArray()[0].id : self.id)
+        const driver = others!.count ? others!.toArray()[0].id : self!.id
+        if (driver) {
+          basketProperties!.set('driver', driver)
+        }
       }
     }
   }, [others])
@@ -171,6 +174,12 @@ function BasketDemo () {
     }
   }
 
+  function handleChangeDriver (userId: string) {
+    if (basketProperties && userId) {
+      basketProperties.set('driver', userId)
+    }
+  }
+
     return (
     <>
       <header className="flex justify-between items-center border-b px-6 py-3">
@@ -198,24 +207,25 @@ function BasketDemo () {
 
             {liveblocksLoaded() ? (
                 <div className="">
-                  <div className="text-lg font-bold my-6">Users</div>
-                  <div className="flex items-center mb-5">
+                  <div className="text-lg font-bold mt-6 mb-5">Users</div>
+                  <div className="flex items-center mb-4">
                     <Avatar url={self!.info.picture} driver={iAmDriver()} />
                     <div className="ml-3">
                       <div className="font-medium">You</div>
                       <div className="text-sm text-gray-500">
-                        {iAmDriver() ? 'Holding basket' : 'You can request items'}
+                        {iAmDriver() ? 'Holding basket' : 'Request items'}
                       </div>
                     </div>
                   </div>
                   {others.map(({ id, info }) => (
-                    <div className="flex items-center mb-5">
+                    <div className="flex items-center mb-4">
                       <Avatar url={info.picture} driver={id === basketProperties!.get('driver')} />
                       <div className="ml-3">
                         <div className="font-medium">{info.name}</div>
                         {id === basketProperties!.get('driver') && (
                           <div className="text-sm text-gray-500">Holding basket</div>
                         )}
+                        {iAmDriver() && id && <button onClick={() => handleChangeDriver(id)} className="text-sm text-cyan-600">Give basket</button>}
                       </div>
                     </div>
                   ))}
@@ -225,7 +235,8 @@ function BasketDemo () {
                         <div key={item.id} className="mb-5 flex justify-between">
                           <div className="flex">
                             <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1">
-                              <Image src={item.image} className="absolute inset-0" />
+                              <Image src={item.image} className="absolute inset-0 animate-pulse" />
+
                             </div>
                             <div className="flex flex-col justify-center items-start">
                               <div className="font-medium">{item.name}</div>
@@ -235,7 +246,7 @@ function BasketDemo () {
                                     className="text-sm text-green-700 mr-2"
                                     onClick={() => handleAcceptItem(item.id)}
                                   >
-                                    Accept
+                                    Allow
                                   </button>
                                   <button
                                     className="text-sm text-red-700"
@@ -258,7 +269,7 @@ function BasketDemo () {
                         </div>
                       ))}
                     </div>
-                  {basket && basket.length > 0 && <div className="text-lg font-bold my-6 pt-6 border-t">Items</div>}
+                  {basket && basket.length > 0 && <div className="text-lg font-bold my-6 pt-6 border-t">Basket</div>}
                     <div>
                       {basket!.toArray().map(item => (
                         <div key={item.id} className="mb-5 flex justify-between">
@@ -357,7 +368,7 @@ function Avatar ({ url = '', driver = false }) {
         src={url}
         alt=""
       />
-      <span style={{ display: driver ? 'block' : 'none' }} className="bg-rose-500 absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-gray-50" />
+      <span style={{ display: driver ? 'block' : 'none' }} className="bg-cyan-500 absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-gray-50" />
     </span>
   )
 }
