@@ -1,5 +1,13 @@
-import { SVGProps } from 'react'
+export default function Logo () {
+  return (
+    <div className="flex justify-center items-center font-bold text-lg text-gray-900">
+      <img className="w-7 h-7 opacity-80 mr-1.5" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABmJLR0QA/wD/AP+gvaeTAAACgElEQVRoge2ZPWsUQRyHH71GIiQmIKaLYBEbrdJ4RjuFBO5jCAE7XxpRrKzEb2CCoCA2poqViiY2RgxJZaGlETSIL3eYInixmF0yN/53d+Z2dnaX3APD7e3szfweZmd2bxfCcQh4DmwD1wL2651ZYDcqHd+NH/TdYAqHE7a9EFKkUAYi+5UR4C17k30XuFtqoj6QJGonkyZRGxlJ4j3QAn5TE5kkibGo/iw1kMmSiKm0zBFgld5w69F+iXNA2zj+TvEx00ma2B3gfMrvKjUyWatTLWSk00kqv4AzKe1Ip9mNwlIb2ErYyrSE4wvHVSJLRmrvWaEG2F2x04o5Z2yXbK8M099IJI2MNBKrJC/ZXmgASx4kdJmN0BIA1z1KSCWIxAjwXev0I3C1bhIAl4yOm9H+23WSAFjUOl426h5YhK2EBMAHrfObRt0oauKWJuHy8OGotr1p1P0A1hz7fgdcBH46/k7ERaStbQ8bdQ3ghENbXiVcec3eKfHYqJvD7ZRqhYksc0sL0gGORfungD+4ibRRd7ulcBL4q4V5AkwCX3GTqITMQyFMnutHG5gOahAxDnx2DFtZmSnyj4Qk06QEpL+lecs3YCKkRIz0wCBveRrUQCPvyMxHJf7exe3C6pV+ZeZRdxajqBek8f7LYeP34ioTS8S80eru9RPA1xurFdRbW5u3tQuo/zZdbd+Ott3wlCkX06SPjDkSAEP0LhpXQoXNIklGkgD10Fo/7nSYmHZIMvdREztmCCXR1Y55GTamHZLMNmpiv+L/a1AHOFVKUguawBbZq9gWMFNSRmuOo67YksAO8Ah1M5qLA3kbcGACuBB9doFPwAvgS8AMAwa48g+AvE7S2m/DfQAAAABJRU5ErkJggg==" alt="TopSocks logo" />
+      TopSocks
+    </div>
+  )
+}
 
+/*
 export default function Logo (props: SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -28,3 +36,6 @@ export default function Logo (props: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
+
+ */

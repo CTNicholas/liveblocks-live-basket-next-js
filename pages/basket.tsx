@@ -1,5 +1,5 @@
 import { RoomProvider, useBatch, useList, useObject, useOthers, useSelf } from '@liveblocks/react'
-import { productList } from '../config/product-list'
+import { productList } from '../config/productList'
 import { useEffect, useState } from 'react'
 import Logo from '../components/Logo'
 import Image from 'next/image'
@@ -29,28 +29,6 @@ export default function Root () {
     room = new URLSearchParams(document.location.search).get('room') || ''
   }
 
-  /*
-  useEffect(() => {
-    async function getRoomStorage () {
-      const { data, error }: APICall = await roomStorage(room)
-
-      if (error) {
-        console.log(error)
-        return
-      }
-
-      console.log(data, error)
-    }
-
-    getRoomStorage()
-  }, [])
-
-  return <div />
-
-   */
-
-
-
   return (
     <RoomProvider id={'live-basket-' + room}>
       <BasketDemo />
@@ -62,7 +40,8 @@ export type Product = {
   id: number
   name: string
   price: number
-  image: StaticImageData | string
+  images: StaticImageData[] | string[]
+  description: string
   quantity?: number
   requested?: boolean
 }
@@ -72,12 +51,6 @@ type User = {
   color: string
   picture: string
 }
-
-/**
- * NEW HOOK IDEA
- * const connected = useConnected()
- * This could return true if connection status === 'open', false otherwise
- */
 
 function BasketDemo () {
   const self = useSelf()
@@ -183,7 +156,7 @@ function BasketDemo () {
     return (
     <>
       <header className="flex justify-between items-center border-b px-6 py-3">
-        <div className="w-9 h-9">
+        <div className="">
           <Logo />
         </div>
         {self && (
@@ -193,18 +166,20 @@ function BasketDemo () {
           </div>
         )}
       </header>
-      <div className="flex items-stretch mx-auto max-w-screen-2xl">
-        <main className="flex-grow">
-          <div className="font-title text-center py-12 text-5xl">
-            Veganuary
+      <div className="flex items-stretch">
+        <main className="flex-grow mx-auto max-w-screen-xl px-8 pb-16">
+          <div className="mt-16 text-4xl font-bold tracking-tight">
+            Bamboo socks
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mb-12 mt-3 pb-8 border-b text-xl font-medium text-gray-500">
+            TopSocks' finest collection of bamboo socks
+          </div>
+          <div className="grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-6 2xl:gap-x-12 gap-y-24">
             {productList.map(p => <Item key={p.name} product={p} onAddToBasket={handleAddToBasket} driver={iAmDriver()} />)}
           </div>
         </main>
-        <aside className="w-80 bg-gray-50 px-6 flex-shrink-0">
+        <aside className="w-80 bg-gray-50 px-6 flex-shrink-0 pb-8">
           <div className="sticky top-10">
-
             {liveblocksLoaded() ? (
                 <div className="">
                   <div className="text-lg font-bold mt-6 mb-5">Users</div>
@@ -213,7 +188,7 @@ function BasketDemo () {
                     <div className="ml-3">
                       <div className="font-medium">You</div>
                       <div className="text-sm text-gray-500">
-                        {iAmDriver() ? 'Holding basket' : 'Request items'}
+                        {iAmDriver() ? 'Holding basket' : 'You can request items'}
                       </div>
                     </div>
                   </div>
@@ -225,18 +200,30 @@ function BasketDemo () {
                         {id === basketProperties!.get('driver') && (
                           <div className="text-sm text-gray-500">Holding basket</div>
                         )}
-                        {iAmDriver() && id && <button onClick={() => handleChangeDriver(id)} className="text-sm text-cyan-600">Give basket</button>}
+                        {iAmDriver() && id && (
+                          <button onClick={() => handleChangeDriver(id)} className="text-sm text-cyan-600">
+                            Give basket
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
-                  {requestedItems && requestedItems.length > 0 && <div className="text-lg font-bold my-6 pt-6 border-t">Requested Items</div>}
+                  {requestedItems && requestedItems.length > 0 && (
+                    <div className="text-lg font-bold my-6 pt-6 border-t">
+                      Requested Items
+                    </div>
+                  )}
                   <div>
                       {requestedItems!.toArray().map(item => (
                         <div key={item.id} className="mb-5 flex justify-between">
                           <div className="flex">
-                            <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1">
-                              <Image src={item.image} className="absolute inset-0 animate-pulse" />
-
+                            <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1 relative">
+                              <Image
+                                src={item.images[0]}
+                                className="animate-pulse"
+                                layout="fill"
+                                objectFit="cover"
+                              />
                             </div>
                             <div className="flex flex-col justify-center items-start">
                               <div className="font-medium">{item.name}</div>
@@ -269,13 +256,21 @@ function BasketDemo () {
                         </div>
                       ))}
                     </div>
-                  {basket && basket.length > 0 && <div className="text-lg font-bold my-6 pt-6 border-t">Basket</div>}
+                  {basket && basket.length > 0 && (
+                    <div className="text-lg font-bold my-6 pt-6 border-t">
+                      Basket
+                    </div>
+                  )}
                     <div>
                       {basket!.toArray().map(item => (
                         <div key={item.id} className="mb-5 flex justify-between">
                           <div className="flex">
-                            <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1">
-                              <Image src={item.image} className="absolute inset-0" />
+                            <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1 relative">
+                              <Image
+                                src={item.images[0]}
+                                layout="fill"
+                                objectFit="cover"
+                              />
                             </div>
                             <div className="flex flex-col justify-center items-start">
                               <div className="font-medium">{item.name}</div>
@@ -307,7 +302,7 @@ function BasketDemo () {
                       disabled={basket!.length < 1}
                       onClick={handleEmptyBasket}
                     >
-                        Empty basket
+                      Empty basket
                     </button>
                     )}
 
@@ -326,6 +321,7 @@ function BasketDemo () {
 
         </aside>
       </div>
+      <footer className="bg-gray-100">asfasg</footer>
     </>
   )
 }
@@ -345,15 +341,40 @@ function Item ({ product, onAddToBasket = () => {}, driver = false }: ItemProps)
   }
 
   return (
-    <div className="p-6">
-      <div className="w-full aspect-[1/1.3] overflow-hidden relative">
-        <Image src={product.image} alt={product.name} layout="fill" objectFit="cover" />
+    <div className="group relative">
+      <div className="w-full aspect-[1/0.7] xl:aspect-[1/1.3] overflow-hidden relative rounded-xl">
+        <Image src={product.images[0]} alt={product.name} layout="fill" objectFit="cover" />
       </div>
-      <div>{product.name}</div>
-      <div className="flex justify-between tabular-nums">
-        <button disabled={quantity < 2} className="border w-10 rounded" onClick={() => setQuantity(quantity - 1)}>-</button>
-        <button onClick={handleOnClick} className="p-2 rounded bg-gray-200">{driver ? 'Add' : 'Request'} {quantity}</button>
-        <button className="border w-10 rounded" onClick={() => setQuantity(quantity + 1)}>+</button>
+      <div className="flex justify-between text-lg mt-5 font-medium text-gray-800">
+        <div>{product.name}</div>
+        <div className="">£{product.price}</div>
+      </div>
+      <div className="text-gray-500 mt-1.5">
+        {product.description}
+      </div>
+      <div className="mt-6 flex justify-between justify-items-stretch w-full tabular-nums gap-3">
+        <button
+          disabled={quantity < 2}
+          className="flex justify-center items-center font-semibold text-gray-700 border border-gray-600 w-10 rounded py-2 active:bg-gray-100 transition-colors"
+          onClick={() => setQuantity(quantity - 1)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-4 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clipRule="evenodd" />
+          </svg>
+        </button>
+        <button
+          onClick={handleOnClick}
+          className="flex-grow py-2 rounded bg-gray-800 hover:bg-gray-600 active:bg-gray-800 transition-colors text-white">
+          {driver ? 'Add' : 'Request'} {quantity}
+        </button>
+        <button
+          className="flex justify-center items-center font-semibold text-gray-700 border border-gray-600 w-10 rounded py-2 active:bg-gray-100 transition-colors"
+          onClick={() => setQuantity(quantity + 1)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+          </svg>
+        </button>
       </div>
     </div>
   )
@@ -372,3 +393,4 @@ function Avatar ({ url = '', driver = false }) {
     </span>
   )
 }
+
