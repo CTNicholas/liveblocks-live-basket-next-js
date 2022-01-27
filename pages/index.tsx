@@ -12,18 +12,18 @@ import ExampleInfo from '../components/ExampleInfo'
 const MainComponent = Basket
 
 const exampleInfo = {
-  hide: true,
-  title: 'Live piano',
+  hide: false,
+  title: 'Live basket',
   description: 'Open in multiple windows, or share the link, to play piano live with others.',
-  githubHref: 'https://github.com/CTNicholas/liveblocks-live-piano-next-js',
-  codeSandboxHref: 'https://codesandbox.io/s/live-piano-with-liveblocks-and-next-js-pgkp5'
+  githubHref: 'https://github.com/CTNicholas/liveblocks-live-basket-next-js',
+  codeSandboxHref: ''
 }
 
 const meta = {
-  title: 'Live Piano • ctnicholas.dev',
+  title: 'Live Basket • ctnicholas.dev',
   description: '',
   image: '/screenshot.png',
-  url: 'https://livepiano.ctnicholas.dev',
+  url: 'https://livebasket.ctnicholas.dev',
   author: 'https://ctnicholas.dev',
   twitter: '@ctnicholasdev'
 }
