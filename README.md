@@ -1,16 +1,16 @@
-# [Live Piano](https://livepiano.ctnicholas.dev)
+# [Live Basket](https://livebasket.ctnicholas.dev)
 
-This repo shows how to build a live piano with [Liveblocks](https://liveblocks.io) and [Next.js](https://nextjs.org/).
+This repo shows how to build a live shopping basket with [Liveblocks](https://liveblocks.io) and [Next.js](https://nextjs.org/).
 
-![Live piano screenshot](https://livepiano.ctnicholas.dev/screenshot.png)
+![Live piano screenshot](https://livebasket.ctnicholas.dev/screenshot.png)
 
 
-## [Try it out](https://livepiano.ctnicholas.dev)
+## [Try it out](https://livebasket.ctnicholas.dev)
 
-There are 10 different instruments to choose from. To play the piano, tap/click the keys on the screen or use your computer's keyboard.
-
-![Live piano keyboard mapping](https://livepiano.ctnicholas.dev/screenshot-mapping.png)
-
+This shopping basket isn't only shared between users, but contains a demo of a driver/passenger relationship.
+Only one user can hold the basket at a time (the "driver"), and they have control over what is added or 
+removed from the basket. Other users, the "passengers", can only request an item is added, and then wait for
+a response. If the driver goes offline, the first passenger still online becomes the new driver.
 
 ## Getting started
 
@@ -39,6 +39,6 @@ There are 10 different instruments to choose from. To play the piano, tap/click 
 
 ## More
 
-On my blog, [ctnicholas.dev](https://www.ctnicholas.dev/), I wrote an interactive article
+- On my blog, [ctnicholas.dev](https://www.ctnicholas.dev/), I wrote an interactive article
 about [using Liveblocks to add live cursors to your website](https://www.ctnicholas.dev/articles/live-cursors-with-liveblocks).
-
+- I recently built a [live piano](https://github.com/CTNicholas/liveblocks-live-piano-next-js) with Liveblocks.

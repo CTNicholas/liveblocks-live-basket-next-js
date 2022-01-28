@@ -6,7 +6,7 @@ import Basket from './basket'
 import ExampleInfo from '../components/ExampleInfo'
 
 /*
- * Check in piano.tsx for the live piano code and guided comments
+ * Check in `basket.tsx` for the live basket code and guided comments
  */
 
 const MainComponent = Basket
@@ -14,7 +14,7 @@ const MainComponent = Basket
 const exampleInfo = {
   hide: false,
   title: 'Live basket',
-  description: 'Open in multiple windows, or share the link, to play piano live with others.',
+  description: 'Open in multiple windows, or share the link, to edit your basket live with others.',
   githubHref: 'https://github.com/CTNicholas/liveblocks-live-basket-next-js',
   codeSandboxHref: ''
 }
@@ -38,9 +38,9 @@ export async function getStaticProps () {
 }
 
 type Props = {
-  hasSetupLiveblocksKey: boolean;
-  isRunningOnCodeSandbox: boolean;
-};
+  hasSetupLiveblocksKey: boolean
+  isRunningOnCodeSandbox: boolean
+}
 
 export default function Home ({
   hasSetupLiveblocksKey,
