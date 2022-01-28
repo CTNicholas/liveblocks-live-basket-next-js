@@ -60,6 +60,7 @@ function BasketDemo () {
   const basket = useList<Product>('basket')
   const requestedItems = useList<Product>('requestedItems')
   const basketProperties = useObject('basketProperties', { driver: '' })
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const liveblocksLoaded = () => (basket && basketProperties && self?.id && others)
 
@@ -154,18 +155,28 @@ function BasketDemo () {
 
     return (
     <>
-      <header className="flex justify-between items-center border-b px-6 py-3">
+      <header className="flex justify-between items-center border-b px-6 py-3 fixed top-0 left-0 right-0 z-10 bg-white">
         <div className="">
           <Logo />
         </div>
         {self && (
           <div className="flex items-center">
-            <span className="mr-3 font-medium">{self ? self.info.name : ''}</span>
-            <Avatar url={self.info.picture} />
+            <span className="hidden md:block mr-3 font-medium">{self ? self.info.name : ''}</span>
+            <div className="hidden md:block"><Avatar url={self.info.picture} /></div>
+            <button
+              className="block md:hidden w-10 h-10 bg-gray-800 text-white rounded-full ml-3 flex justify-center items-center"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {!mobileMenuOpen ? <BagIconLarge count={requestedItems && requestedItems.length || 0} className="w-6 h-6 -mt-1" pulse={requestedItems && requestedItems?.length > 0 || false} /> : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                )}
+            </button>
           </div>
         )}
       </header>
-      <div className="flex items-stretch">
+      <div className="flex items-stretch mt-16">
         <main className="flex-grow mx-auto max-w-screen-xl px-8 pb-16">
           <div className="mt-16 text-4xl font-bold tracking-tight">
             Bamboo socks
@@ -177,8 +188,8 @@ function BasketDemo () {
             {productList.map(p => <Item key={p.name} product={p} onAddToBasket={handleAddToBasket} driver={iAmDriver()} />)}
           </div>
         </main>
-        <aside className="w-80 bg-gray-50 px-6 flex-shrink-0 pb-8">
-          <div className="sticky top-10">
+        <aside className={`w-full fixed inset-0 md:relative md:w-80 bg-gray-50 px-6 flex-shrink-0 pb-8 md:block ${mobileMenuOpen ? 'block' : 'hidden'}`}>
+          <div className="md:sticky md:top-24 mt-24 md:mt-0">
             {liveblocksLoaded() ? (
                 <div className="">
                   <div className="text-lg font-bold mt-6 mb-5">Users</div>
@@ -305,17 +316,11 @@ function BasketDemo () {
                     </button>
                     )}
                 </div>
-
-
             ) : (
               <div>Loading...</div>
             )}
 
           </div>
-
-
-
-
         </aside>
       </div>
     </>
@@ -372,7 +377,7 @@ function Item ({ product, onAddToBasket = () => {}, driver = false }: ItemProps)
 // Circular avatar
 function Avatar ({ url = '', driver = false }) {
   return (
-    <span className="inline-block relative">
+    <span className="block relative">
       <img
         className="h-10 w-10 rounded-full ring-4 ring-gray-50"
         src={url}
@@ -400,6 +405,17 @@ function BagIcon ({ className = '', stroke = false }) {
       <svg xmlns="http://www.w3.org/2000/svg" className="inline h-full w-full" viewBox="0 0 20 20" fill="currentColor">
         <path stroke="white" paintOrder="stroke" strokeWidth={stroke ? 5 : 0} strokeOpacity={stroke ? 1 : 0} fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
       </svg>
+    </div>
+  )
+}
+
+function BagIconLarge ({ className = '', count = 0, pulse = false }) {
+  return (
+    <div className={'relative ' + className}>
+      <svg xmlns="http://www.w3.org/2000/svg" className={`inline h-full w-full ${pulse ? 'animate-pulse' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+      </svg>
+      {count > 0 && <span className="absolute -top-2 -right-3 block h-4 w-4 rounded-full bg-cyan-500 text-xs font-semibold">{count}</span>}
     </div>
   )
 }
