@@ -1,6 +1,6 @@
 import { RoomProvider, useBatch, useList, useObject, useOthers, useSelf } from '@liveblocks/react'
 import { productList } from '../config/productList'
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { LiveList } from '@liveblocks/client'
 
@@ -34,6 +34,8 @@ export default function Root () {
     </RoomProvider>
   )
 }
+
+const monetaryUnit = '€'
 
 export type Product = {
   id: number
@@ -123,9 +125,7 @@ function BasketDemo () {
 
   function handleEmptyBasket () {
     if (basket && iAmDriver()) {
-      batch(() => {
-        basket.forEach(() => basket.delete(0))
-      })
+      basket.clear()
     }
   }
 
@@ -187,7 +187,7 @@ function BasketDemo () {
                     <div className="ml-3">
                       <div className="font-medium">You</div>
                       <div className="text-sm text-gray-500">
-                        {iAmDriver() ? 'Holding basket' : 'You can request items'}
+                        {iAmDriver() ? 'Holding bag' : 'You can request items'}
                       </div>
                     </div>
                   </div>
@@ -197,11 +197,11 @@ function BasketDemo () {
                       <div className="ml-3">
                         <div className="font-medium">{info.name}</div>
                         {id === basketProperties!.get('driver') && (
-                          <div className="text-sm text-gray-500">Holding basket</div>
+                          <div className="text-sm text-gray-500">Holding bag</div>
                         )}
                         {iAmDriver() && id && (
-                          <button onClick={() => handleChangeDriver(id)} className="text-sm text-cyan-600">
-                            Give basket
+                          <button onClick={() => handleChangeDriver(id)} className="text-sm text-cyan-600 block">
+                            Give bag
                           </button>
                         )}
                       </div>
@@ -227,27 +227,27 @@ function BasketDemo () {
                             <div className="flex flex-col justify-center items-start">
                               <div className="font-medium">{item.name}</div>
                               {iAmDriver() ? (
-                                <div>
+                                <div className="flex">
                                   <button
-                                    className="text-sm text-green-700 mr-2"
+                                    className="text-sm text-green-700 mr-2 inline-block"
                                     onClick={() => handleAcceptItem(item.id)}
                                   >
-                                    Allow
+                                    Add to bag
                                   </button>
                                   <button
-                                    className="text-sm text-red-700"
+                                    className="text-sm text-red-700 inline-block"
                                     onClick={() => handleRemoveItem(item.id, requestedItems)}
                                   >
-                                    Deny
+                                    Ignore
                                   </button>
                                 </div>
                               ) : (
-                                <div className="text-sm text-gray-700">Requested</div>
+                                <div className="text-sm text-gray-700 block">Requested item</div>
                               )}
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-semibold">£{item.price.toFixed(2)}</div>
+                            <div className="font-semibold">{monetaryUnit}{item.price.toFixed(2)}</div>
                             <div className="text-sm">
                               <span>x{item.quantity}</span>
                             </div>
@@ -257,7 +257,7 @@ function BasketDemo () {
                     </div>
                   {basket && basket.length > 0 && (
                     <div className="text-lg font-bold my-6 pt-6 border-t">
-                      Basket
+                      Shopping Bag
                     </div>
                   )}
                     <div>
@@ -275,7 +275,7 @@ function BasketDemo () {
                               <div className="font-medium">{item.name}</div>
                               {iAmDriver() && (
                                 <button
-                                  className="text-sm text-red-700"
+                                  className="text-sm text-red-700 block"
                                   onClick={() => handleRemoveItem(item.id, basket)}
                                 >
                                   Remove
@@ -284,7 +284,7 @@ function BasketDemo () {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-semibold">£{item.price.toFixed(2)}</div>
+                            <div className="font-semibold">{monetaryUnit}{item.price.toFixed(2)}</div>
                             <div className="text-sm">
                               <span>x{item.quantity}</span>
                             </div>
@@ -293,7 +293,7 @@ function BasketDemo () {
                       ))}
                     </div>
                     <div className="text-right font-semibold flex justify-between border-t mt-6 pt-6">
-                      <span>Total:</span> <span className="font-bold">£{getTotalPrice().toFixed(2)}</span>
+                      <span>Total:</span> <span className="font-bold">{monetaryUnit}{getTotalPrice().toFixed(2)}</span>
                     </div>
                   {iAmDriver() && (
                     <button
@@ -301,11 +301,9 @@ function BasketDemo () {
                       disabled={basket!.length < 1}
                       onClick={handleEmptyBasket}
                     >
-                      Empty basket
+                      Empty bag
                     </button>
                     )}
-
-
                 </div>
 
 
@@ -320,7 +318,6 @@ function BasketDemo () {
 
         </aside>
       </div>
-      <footer className="bg-gray-100">asfasg</footer>
     </>
   )
 }
@@ -332,6 +329,7 @@ type ItemProps = {
 }
 
 function Item ({ product, onAddToBasket = () => {}, driver = false }: ItemProps) {
+  const quantityMax = 30
   const [quantity, setQuantity] = useState(1)
 
   function handleOnClick () {
@@ -346,34 +344,26 @@ function Item ({ product, onAddToBasket = () => {}, driver = false }: ItemProps)
       </div>
       <div className="flex justify-between text-lg mt-5 font-medium text-gray-800">
         <div>{product.name}</div>
-        <div className="">£{product.price}</div>
+        <div className="">{monetaryUnit}{product.price.toFixed(2)}</div>
       </div>
       <div className="text-gray-500 mt-1.5">
         {product.description}
       </div>
       <div className="mt-6 flex justify-between justify-items-stretch w-full tabular-nums gap-3">
         <button
-          disabled={quantity < 2}
-          className="flex justify-center items-center font-semibold text-gray-700 border border-gray-600 w-10 rounded py-2 active:bg-gray-100 transition-colors"
-          onClick={() => setQuantity(quantity - 1)}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-4 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clipRule="evenodd" />
-          </svg>
-        </button>
-        <button
           onClick={handleOnClick}
-          className="flex-grow py-2 rounded bg-gray-800 hover:bg-gray-600 active:bg-gray-800 transition-colors text-white">
-          {driver ? 'Add' : 'Request'} {quantity}
+          className="flex-grow py-2 rounded bg-gray-800 hover:bg-gray-600 active:bg-gray-800 border border-black transition-colors text-white flex justify-center px-4 items-center block font-medium">
+          {driver ? <>Add to bag<BagIcon className="w-5 h-5 -mt-2 ml-2 -mr-1.5" /></> : <>Request item<BagIcon className="w-5 h-5 -mt-2 ml-2 -mr-2" /></>}
         </button>
-        <button
-          className="flex justify-center items-center font-semibold text-gray-700 border border-gray-600 w-10 rounded py-2 active:bg-gray-100 transition-colors"
-          onClick={() => setQuantity(quantity + 1)}
+        <select
+          className="cursor-pointer text-gray-700 bg-white hover:bg-gray-100 border border-gray-600 rounded py-2 px-2 active:bg-gray-100 transition-colors"
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => setQuantity(parseInt(e.target.value))}
+          value={quantity}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-          </svg>
-        </button>
+          {[...Array(quantityMax).keys()].map((_, i) => (
+            <option key={i} value={i + 1}>{i + 1}</option>
+          ))}
+        </select>
       </div>
     </div>
   )
@@ -388,7 +378,9 @@ function Avatar ({ url = '', driver = false }) {
         src={url}
         alt=""
       />
-      <span style={{ display: driver ? 'block' : 'none' }} className="bg-cyan-500 absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-gray-50" />
+      <span style={{ display: driver ? 'block' : 'none' }} className="absolute bottom-0.5 -right-2 block text-gray-700 h-5 w-5">
+        <BagIcon stroke={true} />
+      </span>
     </span>
   )
 }
@@ -398,6 +390,16 @@ function Logo () {
     <div className="flex justify-center items-center font-bold text-lg text-gray-900">
       <img className="w-7 h-7 opacity-80 mr-1.5" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABmJLR0QA/wD/AP+gvaeTAAACgElEQVRoge2ZPWsUQRyHH71GIiQmIKaLYBEbrdJ4RjuFBO5jCAE7XxpRrKzEb2CCoCA2poqViiY2RgxJZaGlETSIL3eYInixmF0yN/53d+Z2dnaX3APD7e3szfweZmd2bxfCcQh4DmwD1wL2651ZYDcqHd+NH/TdYAqHE7a9EFKkUAYi+5UR4C17k30XuFtqoj6QJGonkyZRGxlJ4j3QAn5TE5kkibGo/iw1kMmSiKm0zBFgld5w69F+iXNA2zj+TvEx00ma2B3gfMrvKjUyWatTLWSk00kqv4AzKe1Ip9mNwlIb2ErYyrSE4wvHVSJLRmrvWaEG2F2x04o5Z2yXbK8M099IJI2MNBKrJC/ZXmgASx4kdJmN0BIA1z1KSCWIxAjwXev0I3C1bhIAl4yOm9H+23WSAFjUOl426h5YhK2EBMAHrfObRt0oauKWJuHy8OGotr1p1P0A1hz7fgdcBH46/k7ERaStbQ8bdQ3ghENbXiVcec3eKfHYqJvD7ZRqhYksc0sL0gGORfungD+4ibRRd7ulcBL4q4V5AkwCX3GTqITMQyFMnutHG5gOahAxDnx2DFtZmSnyj4Qk06QEpL+lecs3YCKkRIz0wCBveRrUQCPvyMxHJf7exe3C6pV+ZeZRdxajqBek8f7LYeP34ioTS8S80eru9RPA1xurFdRbW5u3tQuo/zZdbd+Ott3wlCkX06SPjDkSAEP0LhpXQoXNIklGkgD10Fo/7nSYmHZIMvdREztmCCXR1Y55GTamHZLMNmpiv+L/a1AHOFVKUguawBbZq9gWMFNSRmuOo67YksAO8Ah1M5qLA3kbcGACuBB9doFPwAvgS8AMAwa48g+AvE7S2m/DfQAAAABJRU5ErkJggg==" alt="TopSocks logo" />
       TopSocks
+    </div>
+  )
+}
+
+function BagIcon ({ className = '', stroke = false }) {
+  return (
+    <div className={className}>
+      <svg xmlns="http://www.w3.org/2000/svg" className="inline h-full w-full" viewBox="0 0 20 20" fill="currentColor">
+        <path stroke="white" paintOrder="stroke" strokeWidth={stroke ? 5 : 0} strokeOpacity={stroke ? 1 : 0} fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
+      </svg>
     </div>
   )
 }

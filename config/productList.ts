@@ -19,56 +19,56 @@ export const productList: Product[] = [
   {
     id: 0,
     name: 'Geometric socks',
-    price: 7.00,
+    price: 2.20,
     images: [geometric, whiteBack2],
     description: 'Pink, blue and yellow'
   },
   {
     id: 1,
     name: 'Cat socks',
-    price: 3.00,
+    price: 3.40,
     images: [cat, catBack],
     description: 'Light blue, gray and white'
   },
   {
     id: 2,
     name: 'Puppy paw socks',
-    price: 1.20,
+    price: 1.60,
     images: [paw, pawBack],
     description: 'Light brown and white'
   },
   {
     id: 3,
     name: 'White socks',
-    price: 2.10,
+    price: 0.80,
     images: [white, whiteBack],
     description: 'Plain white'
   },
   {
-    id: 6,
+    id: 4,
     name: 'Jungle socks',
-    price: 0.75,
+    price: 3.80,
     images: [jungle, jungleBack],
     description: 'Dark green'
   },
   {
-    id: 6,
+    id: 5,
     name: 'Hotdog socks',
-    price: 0.75,
+    price: 1.40,
     images: [hotdog, whiteBack2],
     description: 'Brown, red and yellow'
   },
   {
     id: 6,
     name: 'Floral socks',
-    price: 0.75,
+    price: 2.00,
     images: [floral, floralBack],
     description: 'White, green and pink'
   },
   {
     id: 7,
     name: 'Pug socks',
-    price: 0.75,
+    price: 1.80,
     images: [pug, whiteBack],
     description: 'White, brown and pink'
   }
