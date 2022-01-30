@@ -3,6 +3,7 @@ import { productList } from '../config/productList'
 import { ChangeEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { LiveList } from '@liveblocks/client'
+import { motion } from 'framer-motion'
 
 /*
  * This example shows how to use Liveblocks to build a live basket shopping app.
@@ -193,7 +194,7 @@ function BasketDemo () {
           <div className="mb-12 mt-3 pb-8 border-b text-xl font-medium text-gray-500">
             TopSocks' finest collection of bamboo socks
           </div>
-          <div className="grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-6 2xl:gap-x-12 gap-y-24">
+          <div className="grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-6 2xl:gap-x-12 gap-y-24 mb-12">
             {productList.map(p => <Item key={p.name} product={p} onAddToBasket={handleAddToBasket} driver={iAmDriver()} />)}
           </div>
         </main>
@@ -238,10 +239,13 @@ function BasketDemo () {
                       <div className="flex">
                         <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1 relative">
                           <Image
+                            height="40"
+                            width="40"
                             src={item.images[0]}
                             className="animate-pulse"
                             layout="fill"
                             objectFit="cover"
+                            placeholder="blur"
                           />
                         </div>
                         <div className="flex flex-col justify-center items-start">
@@ -286,9 +290,12 @@ function BasketDemo () {
                       <div className="flex">
                         <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1 relative">
                           <Image
+                            height="40"
+                            width="40"
                             src={item.images[0]}
                             layout="fill"
                             objectFit="cover"
+                            placeholder="blur"
                           />
                         </div>
                         <div className="flex flex-col justify-center items-start">
@@ -341,6 +348,17 @@ type ItemProps = {
   onAddToBasket?: (product: Product) => void
 }
 
+const itemImageVariants = {
+  loading: {
+    scale: 1.1,
+    filter: 'blur(10px)'
+  },
+  loaded: {
+    scale: 1,
+    filter: 'blur(0px)'
+  }
+}
+
 // A single item in the shop
 function Item ({
   product, onAddToBasket = () => {
@@ -348,6 +366,7 @@ function Item ({
 }: ItemProps) {
   const quantityMax = 30
   const [quantity, setQuantity] = useState(1)
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   function handleOnClick () {
     onAddToBasket({ ...product, quantity })
@@ -357,7 +376,24 @@ function Item ({
   return (
     <div className="group relative">
       <div className="w-full aspect-[1/0.7] xl:aspect-[1/1.3] overflow-hidden relative rounded-xl">
-        <Image src={product.images[0]} alt={product.name} layout="fill" objectFit="cover" />
+        <motion.div
+          className="w-full h-full"
+          variants={itemImageVariants}
+          initial="loading"
+          animate={imageLoaded ? 'loaded' : 'loading'}
+          style={{ originX: 0.5, originY: 0.5 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Image
+            className="relative"
+            onLoadingComplete={() => setImageLoaded(true)}
+            src={product.images[0]}
+            alt={product.name}
+            layout="fill"
+            objectFit="cover"
+            placeholder="blur"
+          />
+        </motion.div>
       </div>
       <div className="flex justify-between text-lg mt-5 font-medium text-gray-800">
         <div>{product.name}</div>
