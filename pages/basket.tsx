@@ -3,7 +3,7 @@ import { productList } from '../config/productList'
 import { ChangeEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { LiveList } from '@liveblocks/client'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 /*
  * This example shows how to use Liveblocks to build a live basket shopping app.
@@ -56,7 +56,7 @@ function BasketDemo () {
   const basket = useList<Product>('basket')
   const requestedItems = useList<Product>('requestedItems')
   const basketProperties = useObject('basketProperties', { driver: '' })
-  const liveblocksLoaded = () => (basket && basketProperties && self?.id && others)
+  const liveblocksLoaded = () => !!(basket && basketProperties && others && self?.id)
 
   // If no driver is set or online, and no other users are online, become driver
   useEffect(() => {
@@ -163,14 +163,18 @@ function BasketDemo () {
 
   return (
     <>
-      <header className="flex justify-between items-center border-b px-6 py-3 fixed top-0 left-0 right-0 z-10 bg-white">
+      <header className="flex justify-between items-center border-b px-6 py-3 fixed top-0 left-0 right-0 z-10 bg-white min-h-[65px]">
         <div className="">
           <Logo />
         </div>
         {self && (
           <div className="flex items-center">
-            <span className="hidden md:block mr-3 font-medium">{self ? self.info.name : ''}</span>
-            <div className="hidden md:block"><Avatar url={self.info.picture} /></div>
+            <motion.span animate={{ opacity: liveblocksLoaded() ? 1 : 0}} className="hidden md:block mr-3 font-medium">
+              {self ? self.info.name : ''}
+            </motion.span>
+            <motion.div animate={{ opacity: liveblocksLoaded() ? 1 : 0}} className="hidden md:block">
+              <Avatar url={self.info.picture} />
+            </motion.div>
             <button
               className="block md:hidden w-10 h-10 bg-gray-800 text-white rounded-full ml-3 flex justify-center items-center"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -195,146 +199,147 @@ function BasketDemo () {
             TopSocks' finest collection of bamboo socks
           </div>
           <div className="grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-6 2xl:gap-x-12 gap-y-24 mb-12">
-            {productList.map(p => <Item key={p.name} product={p} onAddToBasket={handleAddToBasket} driver={iAmDriver()} />)}
+            {productList.map(p => <Item key={p.name} product={p} onAddToBasket={handleAddToBasket} driver={iAmDriver()} liveblocksLoaded={liveblocksLoaded()} />)}
           </div>
         </main>
         <aside className={`w-full fixed inset-0 md:relative md:w-80 bg-gray-50 px-6 flex-shrink-0 overflow-y-auto md:overflow-y-visible md:block ${mobileMenuOpen ? 'block' : 'hidden'}`}>
           <div className="md:sticky md:top-24 mt-24 md:mt-0 pb-8 mb:pb-12 md:overflow-y-auto">
-            {liveblocksLoaded() ? (
-              <div className="">
-                  <div className="text-lg font-bold mt-6 mb-5">Users</div>
-                  <div className="flex items-center mb-4">
-                    <Avatar url={self!.info.picture} driver={iAmDriver()} />
-                    <div className="ml-3">
-                      <div className="font-medium">You</div>
-                      <div className="text-sm text-gray-500">
-                        {iAmDriver() ? 'Holding bag' : 'You can request items'}
-                      </div>
-                    </div>
-                  </div>
-                {others.map(({ id, info }) => (
-                  <div className="flex items-center mb-4">
-                      <Avatar url={info.picture} driver={id === basketProperties!.get('driver')} />
+            <AnimatePresence>
+              {liveblocksLoaded() && (
+                <motion.div animate={{ opacity: [0, 1] }} className="opacity-0">
+                    <div className="text-lg font-bold mt-6 mb-5">Users</div>
+                    <div className="flex items-center mb-4">
+                      <Avatar url={self!.info.picture} driver={iAmDriver()} />
                       <div className="ml-3">
-                        <div className="font-medium">{info.name}</div>
-                        {id === basketProperties!.get('driver') && (
-                          <div className="text-sm text-gray-500">Holding bag</div>
-                        )}
-                        {iAmDriver() && id && (
-                          <button onClick={() => handleChangeDriver(id)} className="text-sm text-cyan-600 block">
-                            Give bag
-                          </button>
-                        )}
+                        <div className="font-medium">You</div>
+                        <div className="text-sm text-gray-500">
+                          {iAmDriver() ? 'Holding bag' : 'You can request items'}
+                        </div>
                       </div>
                     </div>
-                ))}
-                {requestedItems && requestedItems.length > 0 && (
-                  <div className="text-lg font-bold my-6 pt-6 border-t">
-                      Requested Items
-                    </div>
-                )}
-                <div>
-                  {requestedItems!.toArray().map(item => (
-                    <div key={item.id} className="mb-5 flex justify-between">
-                      <div className="flex">
-                        <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1 relative">
-                          <Image
-                            height="40"
-                            width="40"
-                            src={item.images[0]}
-                            className="animate-pulse"
-                            layout="fill"
-                            objectFit="cover"
-                            placeholder="blur"
-                          />
-                        </div>
-                        <div className="flex flex-col justify-center items-start">
-                          <div className="font-medium">{item.name}</div>
-                          {iAmDriver() ? (
-                            <div className="flex">
-                              <button
-                                className="text-sm text-green-700 mr-2 inline-block"
-                                onClick={() => handleAcceptItem(item.id)}
-                              >
-                                Add to bag
-                              </button>
-                              <button
-                                className="text-sm text-red-700 inline-block"
-                                onClick={() => handleRemoveItem(item.id, requestedItems)}
-                              >
-                                Reject
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="text-sm text-gray-700 block">Requested item</div>
+                  {others.map(({ id, info }) => (
+                    <div className="flex items-center mb-4">
+                        <Avatar url={info.picture} driver={id === basketProperties!.get('driver')} />
+                        <div className="ml-3">
+                          <div className="font-medium">{info.name}</div>
+                          {id === basketProperties!.get('driver') && (
+                            <div className="text-sm text-gray-500">Holding bag</div>
                           )}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold">{monetaryUnit}{item.price.toFixed(2)}</div>
-                        <div className="text-sm">
-                          <span>x{item.quantity}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {basket && basket.length > 0 && (
-                  <div className="text-lg font-bold my-6 pt-6 border-t">
-                      Shopping Bag
-                    </div>
-                )}
-                <div>
-                  {basket!.toArray().map(item => (
-                    <div key={item.id} className="mb-5 flex justify-between">
-                      <div className="flex">
-                        <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1 relative">
-                          <Image
-                            height="40"
-                            width="40"
-                            src={item.images[0]}
-                            layout="fill"
-                            objectFit="cover"
-                            placeholder="blur"
-                          />
-                        </div>
-                        <div className="flex flex-col justify-center items-start">
-                          <div className="font-medium">{item.name}</div>
-                          {iAmDriver() && (
-                            <button
-                              className="text-sm text-red-700 block"
-                              onClick={() => handleRemoveItem(item.id, basket)}
-                            >
-                              Remove
+                          {iAmDriver() && id && (
+                            <button onClick={() => handleChangeDriver(id)} className="text-sm text-cyan-600 block">
+                              Give bag
                             </button>
                           )}
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="font-semibold">{monetaryUnit}{item.price.toFixed(2)}</div>
-                        <div className="text-sm">
-                          <span>x{item.quantity}</span>
+                  ))}
+                  {requestedItems && requestedItems.length > 0 && (
+                    <div className="text-lg font-bold my-6 pt-6 border-t">
+                      Requested Items
+                    </div>
+                  )}
+                  <div>
+                    {requestedItems!.toArray().map(item => (
+                      <div key={item.id} className="mb-5 flex justify-between">
+                        <div className="flex">
+                          <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1 relative">
+                            <Image
+                              height="40"
+                              width="40"
+                              src={item.images[0]}
+                              layout="fill"
+                              objectFit="cover"
+                              placeholder="blur"
+                              className="animate-pulse bg-gray-700"
+                            />
+                          </div>
+                          <div className="flex flex-col justify-center items-start">
+                            <div className="font-medium">{item.name}</div>
+                            {iAmDriver() ? (
+                              <div className="flex">
+                                <button
+                                  className="text-sm text-green-700 mr-2 inline-block"
+                                  onClick={() => handleAcceptItem(item.id)}
+                                >
+                                  Add to bag
+                                </button>
+                                <button
+                                  className="text-sm text-red-700 inline-block"
+                                  onClick={() => handleRemoveItem(item.id, requestedItems)}
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="text-sm text-gray-700 block">Requested item</div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold">{monetaryUnit}{item.price.toFixed(2)}</div>
+                          <div className="text-sm">
+                            <span>x{item.quantity}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="text-right font-semibold flex justify-between border-t mt-6 pt-6">
-                  <span>Total:</span> <span className="font-bold">{monetaryUnit}{getTotalPrice().toFixed(2)}</span>
-                </div>
-                {iAmDriver() && (
-                  <button
-                    className="mt-6 block text-red-700 border border-red-700 disabled:text-gray-500 disabled:border-gray-500 font-semibold block w-full rounded py-2 px-5"
-                    disabled={basket!.length < 1}
-                    onClick={handleEmptyBasket}
-                  >
-                    Empty bag
-                  </button>
-                )}
-                </div>
-            ) : (
-              <div>Loading...</div>
-            )}
+                    ))}
+                  </div>
+                  {basket && basket.length > 0 && (
+                    <div className="text-lg font-bold my-6 pt-6 border-t">
+                        Shopping Bag
+                      </div>
+                  )}
+                  <div>
+                    {basket!.toArray().map(item => (
+                      <div key={item.id} className="mb-5 flex justify-between">
+                        <div className="flex">
+                          <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1 relative">
+                            <Image
+                              height="40"
+                              width="40"
+                              src={item.images[0]}
+                              layout="fill"
+                              objectFit="cover"
+                              placeholder="blur"
+                              className="bg-gray-700"
+                            />
+                          </div>
+                          <div className="flex flex-col justify-center items-start">
+                            <div className="font-medium">{item.name}</div>
+                            {iAmDriver() && (
+                              <button
+                                className="text-sm text-red-700 block"
+                                onClick={() => handleRemoveItem(item.id, basket)}
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold">{monetaryUnit}{item.price.toFixed(2)}</div>
+                          <div className="text-sm">
+                            <span>x{item.quantity}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="text-right font-semibold flex justify-between border-t mt-6 pt-6">
+                    <span>Total:</span> <span className="font-bold">{monetaryUnit}{getTotalPrice().toFixed(2)}</span>
+                  </div>
+                  {iAmDriver() && (
+                    <button
+                      className="hover:bg-red-100 disabled:hover:bg-transparent transition-colors mt-6 block text-red-700 border border-red-700 disabled:text-gray-500 disabled:border-gray-500 font-semibold block w-full rounded py-2 px-5"
+                      disabled={basket!.length < 1}
+                      onClick={handleEmptyBasket}
+                    >
+                      Empty bag
+                    </button>
+                  )}
+                  </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </aside>
       </div>
@@ -346,6 +351,7 @@ type ItemProps = {
   product: Product
   driver?: boolean
   onAddToBasket?: (product: Product) => void
+  liveblocksLoaded?: boolean
 }
 
 const itemImageVariants = {
@@ -360,10 +366,7 @@ const itemImageVariants = {
 }
 
 // A single item in the shop
-function Item ({
-  product, onAddToBasket = () => {
-  }, driver = false
-}: ItemProps) {
+function Item ({ product, onAddToBasket = () => {}, driver = false, liveblocksLoaded}: ItemProps) {
   const quantityMax = 30
   const [quantity, setQuantity] = useState(1)
   const [imageLoaded, setImageLoaded] = useState(false)
@@ -402,22 +405,23 @@ function Item ({
       <div className="text-gray-500 mt-1.5">
         {product.description}
       </div>
-      <div className="mt-6 flex justify-between justify-items-stretch w-full tabular-nums gap-3">
-        <button
-          onClick={handleOnClick}
-          className="flex-grow py-2 rounded bg-gray-800 hover:bg-gray-600 active:bg-gray-800 border border-black transition-colors text-white flex justify-center px-4 items-center block font-medium">
-          {driver ? <>Add to bag<BagIcon className="w-5 h-5 -mt-2 ml-2 -mr-1.5" /></> : <>Request item<BagIcon className="w-5 h-5 -mt-2 ml-2 -mr-2" /></>}
-        </button>
-        <select
-          className="cursor-pointer text-gray-700 bg-white hover:bg-gray-100 border border-gray-600 rounded py-2 px-2 active:bg-gray-100 transition-colors"
-          onChange={(e: ChangeEvent<HTMLSelectElement>) => setQuantity(parseInt(e.target.value))}
-          value={quantity}
-        >
-          {[...Array(quantityMax).keys()].map((_, i) => (
-            <option key={i} value={i + 1}>{i + 1}</option>
-          ))}
-        </select>
-      </div>
+          <motion.div animate={{ opacity: liveblocksLoaded ? 1 : 0 }} className="opacity-0 mt-6 flex justify-between justify-items-stretch w-full tabular-nums gap-3">
+            <button
+              onClick={handleOnClick}
+              className="flex-grow py-2 rounded bg-gray-800 hover:bg-gray-600 active:bg-gray-800 border border-black transition-colors text-white flex justify-center px-4 items-center block font-medium">
+              {driver ? <>Add to bag<BagIcon className="w-5 h-5 -mt-2 ml-2 -mr-1.5" /></> : <>Request item<BagIcon className="w-5 h-5 -mt-2 ml-2 -mr-2" /></>}
+            </button>
+            <select
+              className="cursor-pointer text-gray-700 bg-white hover:bg-gray-100 border border-gray-600 rounded py-2 px-2 active:bg-gray-100 transition-colors"
+              onChange={(e: ChangeEvent<HTMLSelectElement>) => setQuantity(parseInt(e.target.value))}
+              value={quantity}
+            >
+              {[...Array(quantityMax).keys()].map((_, i) => (
+                <option key={i} value={i + 1}>{i + 1}</option>
+              ))}
+            </select>
+          </motion.div>
+
     </div>
   )
 }
