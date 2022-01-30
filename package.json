@@ -9,6 +9,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
+    "@ctnicholas/nextjs": "^1.0.6",
     "@liveblocks/client": "^0.14.0",
     "@liveblocks/node": "0.3.0",
     "@liveblocks/react": "^0.14.0",
