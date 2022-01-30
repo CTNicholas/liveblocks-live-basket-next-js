@@ -1,6 +1,6 @@
 import React from 'react'
 import Basket from './basket'
-import { LiveblocksIndexWrapper, LiveblocksStaticProps } from '@ctnicholas/nextjs/liveblocks'
+import { ExampleWrapper } from '../components/ExampleWrapper'
 
 /*
  * Check in `basket.tsx` for the live basket code and guided comments
@@ -24,14 +24,19 @@ const meta = {
   twitter: '@ctnicholasdev'
 }
 
-export async function getStaticProps () {
-  return LiveblocksStaticProps()
+export default function Index (props: any) {
+  return (
+    <ExampleWrapper info={info} meta={meta} {...props}>
+      <Basket />
+    </ExampleWrapper>
+  )
 }
 
-export default function Home (props: any) {
-  return (
-    <LiveblocksIndexWrapper info={info} meta={meta} {...props}>
-      <Basket />
-    </LiveblocksIndexWrapper>
-  )
+export function getStaticProps () {
+  return {
+    props: {
+      isRunningOnCodeSandbox: process.env.CODESANDBOX_SSE != null,
+      hasSetupLiveblocksKey: process.env.LIVEBLOCKS_SECRET_KEY != null
+    }
+  }
 }
