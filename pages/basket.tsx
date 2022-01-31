@@ -26,7 +26,7 @@ export default function Root () {
   )
 }
 
-const monetaryUnit = '€'
+const monetaryUnit = '£'
 
 export type Product = {
   id: number
@@ -405,14 +405,16 @@ function Item ({ product, onAddToBasket = () => {}, driver = false, liveblocksLo
       <div className="text-gray-500 mt-1.5">
         {product.description}
       </div>
-          <motion.div animate={{ opacity: liveblocksLoaded ? 1 : 0 }} className="opacity-0 mt-6 flex justify-between justify-items-stretch w-full tabular-nums gap-3">
+          <div className="mt-6 flex justify-between justify-items-stretch w-full tabular-nums gap-3">
             <button
+              disabled={!liveblocksLoaded}
               onClick={handleOnClick}
-              className="flex-grow py-2 rounded bg-gray-800 hover:bg-gray-600 active:bg-gray-800 border border-black transition-colors text-white flex justify-center px-4 items-center block font-medium">
+              className="disabled:bg-gray-600 disabled:text-gray-600 disabled:border-gray-600 flex-grow py-2 rounded bg-gray-800 hover:bg-gray-600 active:bg-gray-800 border border-black transition-colors text-white flex justify-center px-4 items-center block font-medium">
               {driver ? <>Add to bag<BagIcon className="w-5 h-5 -mt-2 ml-2 -mr-1.5" /></> : <>Request item<BagIcon className="w-5 h-5 -mt-2 ml-2 -mr-2" /></>}
             </button>
             <select
-              className="cursor-pointer text-gray-700 bg-white hover:bg-gray-100 border border-gray-600 rounded py-2 px-2 active:bg-gray-100 transition-colors"
+              disabled={!liveblocksLoaded}
+              className="disabled:bg-gray-200 disabled:text-gray-200 disabled:border-gray-200 cursor-pointer text-gray-700 bg-white hover:bg-gray-100 border border-gray-600 rounded py-2 px-2 active:bg-gray-100 transition-colors"
               onChange={(e: ChangeEvent<HTMLSelectElement>) => setQuantity(parseInt(e.target.value))}
               value={quantity}
             >
@@ -420,7 +422,7 @@ function Item ({ product, onAddToBasket = () => {}, driver = false, liveblocksLo
                 <option key={i} value={i + 1}>{i + 1}</option>
               ))}
             </select>
-          </motion.div>
+          </div>
 
     </div>
   )
