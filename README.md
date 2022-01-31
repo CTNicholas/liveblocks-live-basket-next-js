@@ -26,7 +26,7 @@ a response. If the driver goes offline, the first passenger still online becomes
 
 ### Run examples on CodeSandbox
 
-- Open this repository on CodeSandbox with this [link](https://codesandbox.io/s/live-piano-with-liveblocks-and-next-js-pgkp5)
+- Open this repository on CodeSandbox with this [link](https://codesandbox.io/s/live-basket-with-liveblocks-next-js-xh3bm)
 
 - Create an account on [liveblocks.io](https://liveblocks.io/dashboard)
 
