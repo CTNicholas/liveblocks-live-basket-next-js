@@ -170,7 +170,7 @@ function BasketDemo () {
         {self && (
           <div className="flex items-center">
             <motion.span animate={{ opacity: liveblocksLoaded() ? 1 : 0}} className="hidden md:block mr-3 font-medium">
-              {self ? self.info.name : ''}
+              {self.info.name}
             </motion.span>
             <motion.div animate={{ opacity: liveblocksLoaded() ? 1 : 0}} className="hidden md:block">
               <Avatar url={self.info.picture} />
@@ -182,7 +182,7 @@ function BasketDemo () {
               {!mobileMenuOpen ? (
                 <BagIconLarge
                   className="w-6 h-6 -mt-1"
-                  count={requestedItems && requestedItems.length || 0}
+                  count={requestedItems && basket && (requestedItems.length) + (basket.length) || 0}
                   pulse={requestedItems && requestedItems?.length > 0 || false}
                 />
               ) : <CloseIcon />}
@@ -218,7 +218,7 @@ function BasketDemo () {
                       </div>
                     </div>
                   {others.map(({ id, info }) => (
-                    <div className="flex items-center mb-4">
+                    <div className="flex items-center mb-4" key={id}>
                         <Avatar url={info.picture} driver={id === basketProperties!.get('driver')} />
                         <div className="ml-3">
                           <div className="font-medium">{info.name}</div>
@@ -244,8 +244,6 @@ function BasketDemo () {
                         <div className="flex">
                           <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1 relative">
                             <Image
-                              height="40"
-                              width="40"
                               src={item.images[0]}
                               layout="fill"
                               objectFit="cover"
@@ -295,8 +293,6 @@ function BasketDemo () {
                         <div className="flex">
                           <div className="w-10 h-10 overflow-hidden mr-3 rounded mt-1 relative">
                             <Image
-                              height="40"
-                              width="40"
                               src={item.images[0]}
                               layout="fill"
                               objectFit="cover"
@@ -465,7 +461,7 @@ function BagIconLarge ({ className = '', count = 0, pulse = false }) {
       <svg xmlns="http://www.w3.org/2000/svg" className={`inline h-full w-full ${pulse ? 'animate-pulse' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
       </svg>
-      {count > 0 && <span className="absolute -top-2 -right-3 block h-4 w-4 rounded-full bg-cyan-500 text-xs font-semibold">{count}</span>}
+      {count > 0 && <span className={`absolute -top-2 -right-3 block h-4 w-4 rounded-full text-xs font-semibold ${pulse ? 'bg-rose-500' : 'bg-cyan-500'}`}>{count}</span>}
     </div>
   )
 }
@@ -480,9 +476,10 @@ function CloseIcon () {
 
 function Logo () {
   return (
-    <div className="flex justify-center items-center font-bold text-lg text-gray-900">
-      <img className="w-7 h-7 opacity-80 mr-1.5" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABmJLR0QA/wD/AP+gvaeTAAACgElEQVRoge2ZPWsUQRyHH71GIiQmIKaLYBEbrdJ4RjuFBO5jCAE7XxpRrKzEb2CCoCA2poqViiY2RgxJZaGlETSIL3eYInixmF0yN/53d+Z2dnaX3APD7e3szfweZmd2bxfCcQh4DmwD1wL2651ZYDcqHd+NH/TdYAqHE7a9EFKkUAYi+5UR4C17k30XuFtqoj6QJGonkyZRGxlJ4j3QAn5TE5kkibGo/iw1kMmSiKm0zBFgld5w69F+iXNA2zj+TvEx00ma2B3gfMrvKjUyWatTLWSk00kqv4AzKe1Ip9mNwlIb2ErYyrSE4wvHVSJLRmrvWaEG2F2x04o5Z2yXbK8M099IJI2MNBKrJC/ZXmgASx4kdJmN0BIA1z1KSCWIxAjwXev0I3C1bhIAl4yOm9H+23WSAFjUOl426h5YhK2EBMAHrfObRt0oauKWJuHy8OGotr1p1P0A1hz7fgdcBH46/k7ERaStbQ8bdQ3ghENbXiVcec3eKfHYqJvD7ZRqhYksc0sL0gGORfungD+4ibRRd7ulcBL4q4V5AkwCX3GTqITMQyFMnutHG5gOahAxDnx2DFtZmSnyj4Qk06QEpL+lecs3YCKkRIz0wCBveRrUQCPvyMxHJf7exe3C6pV+ZeZRdxajqBek8f7LYeP34ioTS8S80eru9RPA1xurFdRbW5u3tQuo/zZdbd+Ott3wlCkX06SPjDkSAEP0LhpXQoXNIklGkgD10Fo/7nSYmHZIMvdREztmCCXR1Y55GTamHZLMNmpiv+L/a1AHOFVKUguawBbZq9gWMFNSRmuOo67YksAO8Ah1M5qLA3kbcGACuBB9doFPwAvgS8AMAwa48g+AvE7S2m/DfQAAAABJRU5ErkJggg==" alt="TopSocks logo" />
-      TopSocks
+    <div className="flex justify-center items-center pl-1">
+      <svg width="125.05" height="29.52" viewBox="0 0 125.05 29.52">
+        <path d="M5.207-24.6H.492v-4.1h13.94v4.1H9.717V0H5.207ZM22.96.41a6.621,6.621,0,0,1-5.084-1.886,7.51,7.51,0,0,1-1.763-5.33V-21.894a7.51,7.51,0,0,1,1.763-5.33A6.621,6.621,0,0,1,22.96-29.11a6.621,6.621,0,0,1,5.084,1.886,7.51,7.51,0,0,1,1.763,5.33V-6.806a7.51,7.51,0,0,1-1.763,5.33A6.621,6.621,0,0,1,22.96.41Zm0-4.1q2.337,0,2.337-2.829V-22.181q0-2.829-2.337-2.829t-2.337,2.829V-6.519Q20.623-3.69,22.96-3.69ZM32.841-28.7h6.642a6.568,6.568,0,0,1,5.043,1.8,7.492,7.492,0,0,1,1.681,5.289v2.829a7.492,7.492,0,0,1-1.681,5.289,6.568,6.568,0,0,1-5.043,1.8H37.351V0h-4.51Zm6.642,12.915a2.121,2.121,0,0,0,1.66-.615,3.117,3.117,0,0,0,.553-2.091v-3.4a3.117,3.117,0,0,0-.553-2.091,2.121,2.121,0,0,0-1.66-.615H37.351v8.815ZM54.694.41a6.337,6.337,0,0,1-4.961-1.866,7.729,7.729,0,0,1-1.681-5.351v-1.64h4.264v1.968q0,2.788,2.337,2.788A2.2,2.2,0,0,0,56.4-4.367,3.289,3.289,0,0,0,56.99-6.56a6.079,6.079,0,0,0-.82-3.177,15.156,15.156,0,0,0-3.034-3.3,18.163,18.163,0,0,1-3.9-4.449,9.072,9.072,0,0,1-1.107-4.489,7.482,7.482,0,0,1,1.722-5.269,6.471,6.471,0,0,1,5-1.865,6.218,6.218,0,0,1,4.9,1.865,7.791,7.791,0,0,1,1.661,5.351V-20.7H57.154v-1.476a3.3,3.3,0,0,0-.574-2.153A2.082,2.082,0,0,0,54.9-25.01q-2.255,0-2.255,2.747a5.418,5.418,0,0,0,.84,2.911,16.065,16.065,0,0,0,3.055,3.28,16.876,16.876,0,0,1,3.9,4.469A9.919,9.919,0,0,1,61.5-6.888a7.692,7.692,0,0,1-1.743,5.412A6.553,6.553,0,0,1,54.694.41ZM70.6.41a6.621,6.621,0,0,1-5.084-1.886,7.51,7.51,0,0,1-1.763-5.33V-21.894a7.51,7.51,0,0,1,1.763-5.33A6.621,6.621,0,0,1,70.6-29.11a6.621,6.621,0,0,1,5.084,1.886,7.51,7.51,0,0,1,1.763,5.33V-6.806a7.51,7.51,0,0,1-1.763,5.33A6.621,6.621,0,0,1,70.6.41Zm0-4.1q2.337,0,2.337-2.829V-22.181q0-2.829-2.337-2.829t-2.337,2.829V-6.519Q68.265-3.69,70.6-3.69ZM86.838.41A6.388,6.388,0,0,1,81.9-1.435a7.4,7.4,0,0,1-1.7-5.207V-22.058a7.4,7.4,0,0,1,1.7-5.207,6.388,6.388,0,0,1,4.941-1.845,6.388,6.388,0,0,1,4.94,1.845,7.4,7.4,0,0,1,1.7,5.207v3.034H89.216v-3.321q0-2.665-2.255-2.665t-2.255,2.665V-6.314q0,2.624,2.255,2.624t2.255-2.624V-10.7H93.48v4.059a7.4,7.4,0,0,1-1.7,5.207A6.388,6.388,0,0,1,86.838.41ZM96.186-28.7h4.51v12.1l5.74-12.1h4.51l-5.371,10.537L111.028,0h-4.715L102.5-12.792l-1.8,3.649V0h-4.51ZM118.736.41a6.337,6.337,0,0,1-4.961-1.866,7.729,7.729,0,0,1-1.681-5.351v-1.64h4.264v1.968q0,2.788,2.337,2.788a2.2,2.2,0,0,0,1.743-.677,3.289,3.289,0,0,0,.594-2.194,6.079,6.079,0,0,0-.82-3.177,15.156,15.156,0,0,0-3.034-3.3,18.164,18.164,0,0,1-3.895-4.449,9.072,9.072,0,0,1-1.107-4.489,7.482,7.482,0,0,1,1.722-5.269,6.471,6.471,0,0,1,5-1.865,6.218,6.218,0,0,1,4.9,1.865,7.791,7.791,0,0,1,1.66,5.351V-20.7H121.2v-1.476a3.3,3.3,0,0,0-.574-2.153,2.082,2.082,0,0,0-1.681-.677q-2.255,0-2.255,2.747a5.418,5.418,0,0,0,.84,2.911,16.065,16.065,0,0,0,3.054,3.28,16.876,16.876,0,0,1,3.895,4.469,9.919,9.919,0,0,1,1.066,4.715A7.692,7.692,0,0,1,123.8-1.476,6.553,6.553,0,0,1,118.736.41Z" transform="translate(-0.492 29.11)"/>
+      </svg>
     </div>
   )
 }
