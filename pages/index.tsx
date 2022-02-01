@@ -8,7 +8,7 @@ import { ExampleWrapper } from '../components/ExampleWrapper'
 
 const info = {
   title: 'Live basket',
-  description: 'Open in multiple windows, or share the link, to edit your basket live with others.',
+  description: 'Open in multiple windows, or share the link, to edit your shopping live with others.',
   githubHref: 'https://github.com/CTNicholas/liveblocks-live-basket-next-js',
   codeSandboxHref: 'https://codesandbox.io/s/live-basket-with-liveblocks-next-js-xh3bm',
   twitterHref: 'https://twitter.com/ctnicholasdev',
@@ -16,8 +16,8 @@ const info = {
 }
 
 const meta = {
-  title: 'Live Basket • ctnicholas.dev',
-  description: '',
+  title: 'Live Basket — A live shared basket for multiple users • ctnicholas.dev',
+  description: 'Open in multiple windows, or share the link, to edit your shopping live with others.',
   image: '/screenshot.png',
   url: 'https://livebasket.ctnicholas.dev',
   author: 'https://ctnicholas.dev',
