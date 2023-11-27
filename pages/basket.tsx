@@ -1,4 +1,4 @@
-import { RoomProvider, useBatch, useList, useObject, useOthers, useSelf } from '@liveblocks/react'
+import { RoomProvider, useBatch, useList, useObject, useOthers, useSelf } from '../liveblocks.config'
 import { productList } from '../config/productList'
 import { ChangeEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
@@ -20,7 +20,7 @@ export default function Root () {
   }
 
   return (
-    <RoomProvider id={'live-basket-' + room}>
+    <RoomProvider id={'live-basket-' + room} initialPresence={{}}>
       <BasketDemo />
     </RoomProvider>
   )
@@ -51,7 +51,7 @@ type User = {
  */
 function BasketDemo () {
   const self = useSelf()
-  const others = useOthers<User>()
+  const others = useOthers()
   const batch = useBatch()
   const basket = useList<Product>('basket')
   const requestedItems = useList<Product>('requestedItems')
@@ -60,7 +60,7 @@ function BasketDemo () {
 
   // If no driver is set or online, and no other users are online, become driver
   useEffect(() => {
-    if (liveblocksLoaded() && !iAmDriver() && others.count === 0) {
+    if (liveblocksLoaded() && !iAmDriver() && others.length === 0) {
       basketProperties!.set('driver', self!.id as string)
     }
   }, [self])
